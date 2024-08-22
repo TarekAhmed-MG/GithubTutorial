@@ -4,11 +4,11 @@ import play.api.libs.json.{Json, OFormat}
 
 //username, date account created, location, number of followers, number following
 case class UserModel(
-                      _login:String,
+                      login:String,
                       created_at:String,
                       location:String,
-                      followers:String,
-                      following:String
+                      followers:Int,
+                      following:Int
                     )
 
 object UserModel{

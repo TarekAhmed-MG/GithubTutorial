@@ -22,7 +22,7 @@ class DataRepository @Inject()(mongoComponent: MongoComponent)(implicit ec: Exec
   mongoComponent = mongoComponent,
   domainFormat = UserModel.formats, // DataModel.formats uses the implicit val formats we created earlier. It tells the driver how to read and write between a UserModel and JSON (the format that data is stored in Mongo)
   indexes = Seq(IndexModel( //indexes is shows the structure of the data stored in Mongo, notice we can ensure the bookId to be unique
-    Indexes.ascending("_login")
+    Indexes.ascending("login")
   )),
   replaceIndexes = false
 ) with dataRepositoryTrait {
