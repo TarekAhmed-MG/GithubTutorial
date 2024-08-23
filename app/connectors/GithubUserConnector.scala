@@ -24,5 +24,4 @@ class GithubUserConnector  @Inject()(ws: WSClient) {
         }
     }
   }
-
 }

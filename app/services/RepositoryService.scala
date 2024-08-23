@@ -15,7 +15,7 @@ class RepositoryService @Inject()(val dataRepositoryTrait: dataRepositoryTrait){
 
   def read(id:String): Future[Either[APIError.BadAPIResponse, Some[UserModel]]] = dataRepositoryTrait.read(id)
 
-  def update(id:String,fieldName:String,user:UserModel): Future[Either[APIError.BadAPIResponse, UpdateResult]] = dataRepositoryTrait.update(id,fieldName,book)
+  def update(id:String,fieldName:String,user:UserModel): Future[Either[APIError.BadAPIResponse, UpdateResult]] = dataRepositoryTrait.update(id,fieldName,user)
 
   def delete(id:String): Future[Either[APIError.BadAPIResponse, DeleteResult]] = dataRepositoryTrait.delete(id)
 

@@ -45,7 +45,7 @@ class DataRepository @Inject()(mongoComponent: MongoComponent)(implicit ec: Exec
       if (createdResult.wasAcknowledged())
         Right(createdResult)
       else
-        Left(APIError.BadAPIResponse(500, "Could not Create Book"))
+        Left(APIError.BadAPIResponse(500, "Unable to create user"))
     }
 
   private def byUsername(userName: String): Bson = // change fields
