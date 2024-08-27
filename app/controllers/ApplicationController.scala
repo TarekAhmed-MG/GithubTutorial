@@ -25,6 +25,16 @@ class ApplicationController @Inject()(
     }
   }
 
+  def storeGithubUser(userName: String): Action[AnyContent] = Action.async { implicit request =>
+    githubUserService.getGithubUser(userName = userName).value.flatMap {
+      case Right(user) => repositoryService.create(user).map {
+                case Right(_) => Status(CREATED)
+                case Left(apiError) => Status(apiError.upstreamStatus)(apiError.upstreamMessage)
+              }
+      case Left(_) => Future.successful(Status(404)(Json.toJson("Unable to find any users")))
+    }
+  }
+
   def create(): Action[JsValue] = Action.async(parse.json) { implicit request =>
     request.body.validate[UserModel] match {
       case JsSuccess(userModel, _) =>
