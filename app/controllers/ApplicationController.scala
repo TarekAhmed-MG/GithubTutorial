@@ -33,6 +33,13 @@ class ApplicationController @Inject()(
     }
   }
 
+  def getGithubUserRepositoryFolder(userName: String, repoName: String) = Action.async { implicit request =>
+    githubUserService.getGithubUser(userName = userName).value.map {
+      case Right(user) =>  Ok {Json.toJson(user)}
+      case Left(_) => Status(404)(Json.toJson("Unable to find repository"))
+    }
+  }
+
   def storeGithubUser(userName: String): Action[AnyContent] = Action.async { implicit request =>
     githubUserService.getGithubUser(userName = userName).value.flatMap {
       case Right(user) => repositoryService.create(user).map {
@@ -72,11 +79,10 @@ class ApplicationController @Inject()(
     }
   }
 
-  def delete(id:String): Action[AnyContent] = Action.async{implicit request =>
+  def delete(id:String): Action[AnyContent] = Action.async{ implicit request =>
     repositoryService.delete(id).map{
       case Right(_) => Status(ACCEPTED)
       case Left(apiError) => Status(apiError.upstreamStatus)(Json.toJson(apiError.upstreamMessage))
     }
   }
-
 }
