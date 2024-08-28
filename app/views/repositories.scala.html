@@ -1,0 +1,14 @@
+@(repositories: List[RepositoryModel])
+
+@main("repository") {
+
+    <h2>Repositories</h2>
+
+    @repositories.map{ repository =>
+        <h3> @repository.name </h3>
+
+    }
+
+
+
+}

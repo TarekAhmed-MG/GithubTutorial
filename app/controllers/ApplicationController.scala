@@ -28,7 +28,7 @@ class ApplicationController @Inject()(
 
   def getGithubUserRepositories(userName: String): Action[AnyContent] = Action.async { implicit request =>
     githubUserService.getGithubUserRepositories(userName = userName).value.map {
-      case Right(repositories) =>  Ok {Json.toJson(repositories)}
+      case Right(repositories) =>  Ok {views.html.repositories(repositories)}
       case Left(_) => Status(404)(Json.toJson("Unable to find any repositories"))
     }
   }
