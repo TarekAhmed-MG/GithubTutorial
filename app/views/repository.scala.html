@@ -1,0 +1,10 @@
+@(repository: List[RepositoryModel])
+
+@main("repository") {
+    <h2>Repository Files and Folders</h2>
+    @repository.map{ repository =>
+        <h3> @repository.name </h3>
+        <h4> @repository.repositoryModelDTO.fileType </h4>
+        <h4> @repository.sha </h4>
+    }
+}
