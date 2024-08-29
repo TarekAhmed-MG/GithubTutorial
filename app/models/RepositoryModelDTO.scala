@@ -1,3 +1,3 @@
 package models
 
-case class RepositoryModelDTO(name:String,fileType:String,sha:String)
+case class RepositoryModelDTO(name:String,path:String,fileType:String,sha:String)

@@ -37,7 +37,7 @@ class ApplicationController @Inject()(
 
   def getGithubRepository(userName: String, repoName: String): Action[AnyContent] = Action.async { implicit request =>
     githubUserService.getGithubRepository(userName = userName,repoName = repoName).value.map {
-      case Right(repo) =>  Ok {views.html.repository(repo)}
+      case Right(repo) =>  Ok {views.html.repository(repo,userName,repoName)}
       case Left(_) => Status(404)(Json.toJson("Unable to find repository"))
     }
   }
@@ -51,7 +51,7 @@ class ApplicationController @Inject()(
         case Left(_) => Status(404)(Json.toJson("Unable to find any files"))
       }
       case "Directory" => githubUserService.getGithubRepositoryDir(userName= userName, repoName= repoName, path= encodedPath).value.map {
-        case Right(directory) => Ok {views.html.repository(directory)}
+        case Right(directory) => Ok {views.html.repository(directory,userName, repoName)}
         case Left(_) => Status(404)(Json.toJson("Unable to find any directories"))
       }
       case _ => Future(Status(404)(Json.toJson("Unable to find any directories or Files")))
