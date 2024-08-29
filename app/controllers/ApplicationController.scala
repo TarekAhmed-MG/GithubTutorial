@@ -5,6 +5,8 @@ import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
 import services.{GithubUserService, RepositoryService}
 
+import java.nio.charset.StandardCharsets
+import java.util.Base64
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -20,8 +22,49 @@ class ApplicationController @Inject()(
 
   def getGithubUser(userName: String): Action[AnyContent] = Action.async { implicit request =>
     githubUserService.getGithubUser(userName = userName).value.map {
-      case Right(user) =>  Ok {Json.toJson(user)}
+      //case Right(user) =>  Ok {Json.toJson(user)} // over here do a views.html.PageName(user)
+      case Right(user) =>  Ok {views.html.github(user)}
       case Left(_) => Status(404)(Json.toJson("Unable to find any users"))
+    }
+  }
+
+  def getGithubUserRepositories(userName: String): Action[AnyContent] = Action.async { implicit request =>
+    githubUserService.getGithubUserRepositories(userName = userName).value.map {
+      case Right(repositories) =>  Ok {views.html.repositories(repositories, userName)}
+      case Left(_) => Status(404)(Json.toJson("Unable to find any repositories"))
+    }
+  }
+
+  def getGithubRepository(userName: String, repoName: String): Action[AnyContent] = Action.async { implicit request =>
+    githubUserService.getGithubRepository(userName = userName,repoName = repoName).value.map {
+      case Right(repo) =>  Ok {views.html.repository(repo,userName,repoName)}
+      case Left(_) => Status(404)(Json.toJson("Unable to find repository"))
+    }
+  }
+
+  def getGithubRepositoryFileOrDir(userName:String,repoName:String,path: String): Action[AnyContent] = Action.async { implicit request =>
+     val encodedPath = Base64.getEncoder.encode(path.getBytes(StandardCharsets.UTF_8))
+
+    githubUserService.returnFileorDir(encodedPath) match {
+      case "File" => githubUserService.getGithubRepositoryFile(userName= userName, repoName= repoName, path= encodedPath).value.map {
+        case Right(file) => Ok {views.html.file(file)}
+        case Left(_) => Status(404)(Json.toJson("Unable to find any files"))
+      }
+      case "Directory" => githubUserService.getGithubRepositoryDir(userName= userName, repoName= repoName, path= encodedPath).value.map {
+        case Right(directory) => Ok {views.html.repository(directory,userName, repoName)}
+        case Left(_) => Status(404)(Json.toJson("Unable to find any directories"))
+      }
+      case _ => Future(Status(404)(Json.toJson("Unable to find any directories or Files")))
+    }
+  }
+
+  def storeGithubUser(userName: String): Action[AnyContent] = Action.async { implicit request =>
+    githubUserService.getGithubUser(userName = userName).value.flatMap {
+      case Right(user) => repositoryService.create(user).map {
+                case Right(_) => Status(CREATED)
+                case Left(apiError) => Status(apiError.upstreamStatus)(apiError.upstreamMessage)
+              }
+      case Left(_) => Future.successful(Status(404)(Json.toJson("Unable to find any users")))
     }
   }
 
@@ -54,11 +97,10 @@ class ApplicationController @Inject()(
     }
   }
 
-  def delete(id:String): Action[AnyContent] = Action.async{implicit request =>
+  def delete(id:String): Action[AnyContent] = Action.async{ implicit request =>
     repositoryService.delete(id).map{
       case Right(_) => Status(ACCEPTED)
       case Left(apiError) => Status(apiError.upstreamStatus)(Json.toJson(apiError.upstreamMessage))
     }
   }
-
 }

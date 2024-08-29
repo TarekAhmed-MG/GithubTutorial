@@ -1,0 +1,11 @@
+@(repositories: List[RepositoriesModel], userName: String)
+
+@main("repositories") {
+    <h2>Repositories</h2>
+    @repositories.map{ repository =>
+            <Li>
+                <a href="@routes.ApplicationController.getGithubRepository(userName,repository.name)">@repository.name  </a>
+            </Li>
+
+    }
+}

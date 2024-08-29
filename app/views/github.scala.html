@@ -1,0 +1,18 @@
+@import play.api.libs.json.JsValue
+
+@(user: UserModel)
+
+@main("github") {
+    <div>
+        <h2>User Details</h2>
+        <p><strong>ID:</strong> @user.login <p>
+        <p><strong>Created At:</strong> @user.created_at </p>
+        <p><strong>Location:</strong> @user.location </p>
+        <p><strong>Followers:</strong> @user.followers </p>
+        <p><strong>Following:</strong> @user.following </p>
+
+        <a href="@routes.ApplicationController.getGithubUserRepositories(user.login)">View @user.login Repositories </a>
+
+
+    </div>
+}

@@ -27,18 +27,14 @@ trait dataRepositoryTrait {
 }
 
 class DataRepository @Inject()(mongoComponent: MongoComponent)(implicit ec: ExecutionContext) extends PlayMongoRepository[UserModel](
-  collectionName = "dataModels", // "UserModels" is the name of the collection (you can set this to whatever you like).
+  collectionName = "dataModels", // "dataModels" is the name of the collection (you can set this to whatever you like).
   mongoComponent = mongoComponent,
   domainFormat = UserModel.formats, // UserModel.formats uses the implicit val formats we created earlier. It tells the driver how to read and write between a UserModel and JSON (the format that data is stored in Mongo)
   indexes = Seq(IndexModel( //indexes is shows the structure of the data stored in Mongo, notice we can ensure the bookId to be unique
-    Indexes.ascending("_login")
+    Indexes.ascending("login")
   )),
   replaceIndexes = false
 ) with dataRepositoryTrait {
-
-  // start here:
-
-  //  def create(book: UserModel): Either[APIError.BadAPIResponse, Future[UserModel]] = {
 
   override def create(user: UserModel): Future[Either[APIError.BadAPIResponse, InsertOneResult]] =
     collection.insertOne(user).toFuture().map{ createdResult =>
@@ -50,7 +46,7 @@ class DataRepository @Inject()(mongoComponent: MongoComponent)(implicit ec: Exec
 
   private def byUsername(userName: String): Bson = // change fields
       Filters.and(
-        Filters.equal("_login", userName)
+        Filters.equal("login", userName)
       )
 
   // retrieves a UserModel object from the database. It uses an id parameter to find the data its looking for
@@ -66,7 +62,7 @@ class DataRepository @Inject()(mongoComponent: MongoComponent)(implicit ec: Exec
   override def update(id: String,fieldName:String, user:UserModel): Future[Either[APIError.BadAPIResponse, UpdateResult]] = {
 
     val change = fieldName match {
-      case "_login" => user._login
+      case "login" => user.login
       case "created_at" => user.created_at
       case "location" => user.location
       case "followers" => user.followers

@@ -24,4 +24,19 @@ class GithubUserConnector  @Inject()(ws: WSClient) {
         }
     }
   }
+
+  def getList[Response](url: String)(implicit rds: OFormat[Response], ec: ExecutionContext): EitherT[Future, APIError, List[Response]] = {
+    val request = ws.url(url)
+    val response = request.get()
+    EitherT {
+      response
+        .map {
+          result =>
+            Right(result.json.as[List[Response]])
+        }
+        .recover { case _: WSResponse =>
+          Left(APIError.BadAPIResponse(500, "Could not connect"))
+        }
+    }
+  }
 }

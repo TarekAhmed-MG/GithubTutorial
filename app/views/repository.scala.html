@@ -1,0 +1,11 @@
+@(repository: List[RepositoryModel], userName:String, repoName:String)
+
+@main("repository") {
+    <h2>Repository Files and Folders</h2>
+    @repository.map{ repository =>
+        <h3> <a href="@routes.ApplicationController.getGithubRepositoryFileOrDir(userName= userName,repoName= repoName,path= repository.path)">@repository.name  </a> </h3>
+        <h4> @repository.repositoryModelDTO.fileType </h4>
+        <h4> @repository.sha </h4>
+
+    }
+}
