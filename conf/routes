@@ -12,7 +12,9 @@ GET     /assets/*file               controllers.Assets.versioned(path="/public",
 GET /github/users/:userName         controllers.ApplicationController.getGithubUser(userName:String)
 GET /github/storeUser/:userName     controllers.ApplicationController.storeGithubUser(userName:String)
 GET /github/users/:userName/repositories controllers.ApplicationController.getGithubUserRepositories(userName:String)
-GET /github/users/:userName/repos/:repoName controllers.ApplicationController.getGithubUserRepositoryFolder(userName:String,repoName:String)
+GET /github/users/:userName/repos/:repoName controllers.ApplicationController.getGithubRepository(userName:String,repoName:String)
+GET /github/users/:userName/repos/:repoName/*path controllers.ApplicationController.getGithubRepositoryFileOrDir(userName:String,repoName:String,path:String)
+
 
 POST    /api/create controllers.ApplicationController.create()
 GET     /api/read/:id controllers.ApplicationController.read(id)

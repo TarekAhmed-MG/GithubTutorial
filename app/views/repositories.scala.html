@@ -4,7 +4,7 @@
     <h2>Repositories</h2>
     @repositories.map{ repository =>
             <Li>
-                <a href="@routes.ApplicationController.getGithubUserRepositoryFolder(userName,repository.name)">@repository.name  </a>
+                <a href="@routes.ApplicationController.getGithubRepository(userName,repository.name)">@repository.name  </a>
             </Li>
 
     }

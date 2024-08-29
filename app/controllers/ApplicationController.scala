@@ -33,10 +33,24 @@ class ApplicationController @Inject()(
     }
   }
 
-  def getGithubUserRepositoryFolder(userName: String, repoName: String) = Action.async { implicit request =>
-    githubUserService.getGithubUserRepositoryFolder(userName = userName,repoName = repoName).value.map {
+  def getGithubRepository(userName: String, repoName: String): Action[AnyContent] = Action.async { implicit request =>
+    githubUserService.getGithubRepository(userName = userName,repoName = repoName).value.map {
       case Right(repo) =>  Ok {views.html.repository(repo)}
       case Left(_) => Status(404)(Json.toJson("Unable to find repository"))
+    }
+  }
+
+  def getGithubRepositoryFileOrDir(userName:String,repoName:String,path: String): Action[AnyContent] = Action.async { implicit request =>
+    if (path.contains(".")){
+      githubUserService.getGithubRepositoryFile(userName= userName, repoName= repoName, path= path).value.map {
+        case Right(file) => Ok {views.html.file(file)}
+        case Left(_) => Status(404)(Json.toJson("Unable to find any files"))
+      }
+    }else{
+      githubUserService.getGithubRepositoryDir(userName= userName, repoName= repoName, path= path).value.map {
+        case Right(directory) => Ok {views.html.repository(directory)}
+        case Left(_) => Status(404)(Json.toJson("Unable to find any directories"))
+      }
     }
   }
 
