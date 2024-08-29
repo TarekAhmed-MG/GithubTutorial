@@ -23,6 +23,7 @@ libraryDependencies ++= Seq(
   "org.typelevel"                %% "cats-core"                 % "2.3.0"
 )
 
+dependencyOverrides +="com.fasterxml.jackson.core" % "jackson-databind" % "2.11.0"
 
 //----------------------------------
 // default orgs changed it to the ones i used in the play template
