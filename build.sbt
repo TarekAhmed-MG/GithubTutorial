@@ -19,8 +19,10 @@ libraryDependencies ++= Seq(
   "org.scalamock"          %% "scalamock"               % "5.2.0"             % Test,
   "org.scalatestplus.play" %% "scalatestplus-play"   % "5.1.0"          % Test,
   ws,
+  "com.github.tomakehurst" % "wiremock-jre8" % "2.33.2" % Test,
   "org.typelevel"                %% "cats-core"                 % "2.3.0"
 )
+
 
 //----------------------------------
 // default orgs changed it to the ones i used in the play template
