@@ -41,6 +41,9 @@ class ApplicationController @Inject()(
   }
 
   def getGithubRepositoryFileOrDir(userName:String,repoName:String,path: String): Action[AnyContent] = Action.async { implicit request =>
+    // TODO: base encode the path pass that in and decode when needed
+    // val encodedPath = ....
+
     if (path.contains(".")){
       githubUserService.getGithubRepositoryFile(userName= userName, repoName= repoName, path= path).value.map {
         case Right(file) => Ok {views.html.file(file)}
