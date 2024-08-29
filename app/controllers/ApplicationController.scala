@@ -42,33 +42,21 @@ class ApplicationController @Inject()(
     }
   }
 
-
-
-  /*
-   idea:
-   controllers are just for getting and returning requests
-   do the path check for file or directory in the service, then return back the string file or directory
-   do a pattern match and then do the stuff below such as githubUserService.getGithubRepositoryFile ....
-    */
-
   def getGithubRepositoryFileOrDir(userName:String,repoName:String,path: String): Action[AnyContent] = Action.async { implicit request =>
-    // TODO: base encode the path pass that in and decode when needed
      val encodedPath = Base64.getEncoder.encode(path.getBytes(StandardCharsets.UTF_8))
 
-    if (path.contains(".")){
-      githubUserService.getGithubRepositoryFile(userName= userName, repoName= repoName, path= encodedPath).value.map {
+    githubUserService.returnFileorDir(encodedPath) match {
+      case "File" => githubUserService.getGithubRepositoryFile(userName= userName, repoName= repoName, path= encodedPath).value.map {
         case Right(file) => Ok {views.html.file(file)}
         case Left(_) => Status(404)(Json.toJson("Unable to find any files"))
       }
-    }else{
-      githubUserService.getGithubRepositoryDir(userName= userName, repoName= repoName, path= encodedPath).value.map {
+      case "Directory" => githubUserService.getGithubRepositoryDir(userName= userName, repoName= repoName, path= encodedPath).value.map {
         case Right(directory) => Ok {views.html.repository(directory)}
         case Left(_) => Status(404)(Json.toJson("Unable to find any directories"))
       }
+      case _ => Future(Status(404)(Json.toJson("Unable to find any directories or Files")))
     }
   }
-
-
 
   def storeGithubUser(userName: String): Action[AnyContent] = Action.async { implicit request =>
     githubUserService.getGithubUser(userName = userName).value.flatMap {
