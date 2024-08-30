@@ -2,7 +2,6 @@ package controllers
 
 import baseSpec.{BaseSpec, BaseSpecWithApplication}
 import models.UserModel
-import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.Result
 import play.api.test.Helpers.{await, contentAsJson, defaultAwaitTimeout, status}
@@ -15,7 +14,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
   val TestApplicationController = new ApplicationController(component,service,repoService)
 
   /*
-  _login:String,
+  login:String,
   created_at:String,
   location:String,
   followers:Int,
@@ -81,7 +80,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
   "ApplicationController .Update()" should {
 
     /*
-  _login:String,
+  login:String,
   created_at:String,
   location:String,
   followers:Int,
@@ -105,7 +104,7 @@ class ApplicationControllerSpec extends BaseSpecWithApplication {
       status(createdResult) shouldBe Status.CREATED
 
       val updateRequest: FakeRequest[JsValue] = buildGet("/api/${userModel._login}").withBody[JsValue](Json.toJson(updateUsername))
-      val updatedResult = TestApplicationController.update("testName","_login")(updateRequest)
+      val updatedResult = TestApplicationController.update("testName","login")(updateRequest)
       status(updatedResult) shouldBe Status.ACCEPTED
 
       val readResult: Future[Result] = TestApplicationController.read("updatedName")(FakeRequest())
