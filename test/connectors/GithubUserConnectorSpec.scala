@@ -1,10 +1,12 @@
 package connectors
 
+import akka.util.Helpers.Requiring
 import baseSpec.{BaseSpec, BaseSpecWithApplication}
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration._
+import com.github.tomakehurst.wiremock.http.Fault
 import models.{APIError, UserModel}
 import play.api.http.Status
 import play.api.libs.json.{JsValue, Json}
@@ -59,5 +61,22 @@ class GithubUserConnectorSpec extends BaseSpecWithApplication {
       response.toOption.get.location shouldBe "London"
       response.toOption.get.followers shouldBe 2
       response.toOption.get.following shouldBe 3
+  }
+
+  "testGithubUserConnector.get should return Usermodel " in {
+    val path = "/github/users/TarekAhmed-MG"
+    stubFor(get(urlEqualTo(path))
+      .willReturn(
+        aResponse()
+          .withFault(Fault.CONNECTION_RESET_BY_PEER)
+          )
+    )
+
+    val request = s"http://$Host:$Port$path"
+    val responseFuture = testGithubUserConnector.get[UserModel](request)
+
+    val response = Await.result(responseFuture.value, Duration(100, TimeUnit.MILLISECONDS))
+    response shouldBe Left(APIError.BadAPIResponse(500, "Could not connect"))
+
   }
 }
