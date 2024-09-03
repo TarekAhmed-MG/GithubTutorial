@@ -4,7 +4,8 @@ import baseSpec.BaseSpecWithApplication
 
 class EnvironmentVariablesSpec extends BaseSpecWithApplication{
 
-  "find a user in the database by username" in {
+  "check if authToken can be retrieved" in {
     assert(EnvironmentVariables.authToken == sys.env.getOrElse("AuthPassword","Failed"))
   }
+
 }
