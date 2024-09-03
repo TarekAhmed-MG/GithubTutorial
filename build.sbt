@@ -5,6 +5,11 @@ ThisBuild / version := "0.1.0-SNAPSHOT"
 
 ThisBuild / scalaVersion := "2.13.8"
 
+// Specify the Java target version for both Scala and Java compilation
+ThisBuild / javacOptions ++= Seq("-source", "1.8", "-target", "1.8")
+ThisBuild / scalacOptions ++= Seq("-target:jvm-1.8")
+
+
 lazy val root = (project in file("."))
   .settings(
     name := "githubTutorial"
@@ -19,8 +24,13 @@ libraryDependencies ++= Seq(
   "org.scalamock"          %% "scalamock"               % "5.2.0"             % Test,
   "org.scalatestplus.play" %% "scalatestplus-play"   % "5.1.0"          % Test,
   ws,
+  "com.github.tomakehurst" % "wiremock-jre8" % "2.33.2" % Test,
   "org.typelevel"                %% "cats-core"                 % "2.3.0"
 )
+
+
+
+dependencyOverrides +="com.fasterxml.jackson.core" % "jackson-databind" % "2.11.0"
 
 //----------------------------------
 // default orgs changed it to the ones i used in the play template

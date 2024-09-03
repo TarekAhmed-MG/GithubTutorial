@@ -45,7 +45,7 @@ class ApplicationController @Inject()(
   def getGithubRepositoryFileOrDir(userName:String,repoName:String,path: String): Action[AnyContent] = Action.async { implicit request =>
      val encodedPath = Base64.getEncoder.encode(path.getBytes(StandardCharsets.UTF_8))
 
-    githubUserService.returnFileorDir(encodedPath) match {
+    githubUserService.returnFileOrDir(encodedPath) match {
       case "File" => githubUserService.getGithubRepositoryFile(userName= userName, repoName= repoName, path= encodedPath).value.map {
         case Right(file) => Ok {views.html.file(file)}
         case Left(_) => Status(404)(Json.toJson("Unable to find any files"))

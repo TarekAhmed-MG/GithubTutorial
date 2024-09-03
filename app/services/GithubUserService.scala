@@ -21,7 +21,7 @@ class GithubUserService @Inject()(connector:GithubUserConnector){
 
   private val decoder: Array[Byte] => String = (encodedPath) => new String(Base64.getDecoder.decode(encodedPath), StandardCharsets.UTF_8)
 
-  val returnFileorDir: Array[Byte] => String = (encodedPath) => if(decoder(encodedPath).contains(".")) "File" else "Directory"
+  val returnFileOrDir: Array[Byte] => String = (encodedPath) => if(decoder(encodedPath).contains(".")) "File" else "Directory"
 
   def getGithubUser(urlOverride: Option[String] = None, userName: String)(implicit ec: ExecutionContext):EitherT[Future, APIError, UserModel] =
     connector.get[UserModel](urlOverride.getOrElse(s"https://api.github.com/users/$userName"))
@@ -38,13 +38,4 @@ class GithubUserService @Inject()(connector:GithubUserConnector){
   def getGithubRepositoryFile(urlOverride: Option[String] = None,userName: String, repoName:String, path: Array[Byte])(implicit ec: ExecutionContext):EitherT[Future, APIError, FileModel] =
     connector.get[FileModel](urlOverride.getOrElse(s"https://api.github.com/repos/$userName/$repoName/contents/${decoder(path)}"))
 
-
-
-  //  def getGithubRepositoryFileOrDir(urlOverride: Option[String] = None,userName: String, repoName:String, path: String)(implicit ec: ExecutionContext): EitherT[Future, APIError, _ >: List[RepositoryModel] with FileModel <: Equals] ={
-  //    if (path.contains(".")) {
-  //      connector.getList[RepositoryModel](urlOverride.getOrElse(s"https://api.github.com/repos/$userName/$repoName/$path"))
-  //    } else {
-  //      connector.get[FileModel](urlOverride.getOrElse(s"https://api.github.com/repos/$userName/$repoName/$path"))
-  //    }
-  //  }
 }
