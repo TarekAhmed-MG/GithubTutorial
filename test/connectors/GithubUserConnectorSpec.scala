@@ -52,6 +52,7 @@ class GithubUserConnectorSpec extends BaseSpecWithApplication {
         aResponse()
           .withStatus(200)
           .withBody(expectedJson)))
+
     val request = s"http://$Host:$Port$path"
     val responseFuture = testGithubUserConnector.get[UserModel](request)
 
