@@ -1,6 +1,6 @@
 package controllers
 
-import models.UserModel
+import models.{APIError, FileRequestModel, FileRequestModelDTO, UserModel}
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
 import services.{GithubUserService, RepositoryService}
@@ -57,6 +57,22 @@ class ApplicationController @Inject()(
       case _ => Future(Status(404)(Json.toJson("Unable to find any directories or Files")))
     }
   }
+
+  def createGithubRepositoryFile(userName:String,repoName:String,path: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
+    val encodedPath = Base64.getEncoder.encode(path.getBytes(StandardCharsets.UTF_8))
+    request.body.validate[FileRequestModelDTO] match {
+      case JsSuccess(fileRequestModelDTO , _) =>
+        githubUserService.createGithubRepositoryFile(userName= userName, repoName= repoName, path= encodedPath,requestBody= fileRequestModelDTO).value.map {
+          case Right(file) => Ok {views.html.file(file)}
+          case Left(apiError) => Status(apiError.httpResponseStatus)(apiError.reason)
+        }
+      case JsError(_) => Future(BadRequest)
+    }
+  }
+
+  //update repo/file
+
+  // delete repo/file
 
   def storeGithubUser(userName: String): Action[AnyContent] = Action.async { implicit request =>
     githubUserService.getGithubUser(userName = userName).value.flatMap {

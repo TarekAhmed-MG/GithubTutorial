@@ -14,6 +14,10 @@ GET /github/storeUser/:userName     controllers.ApplicationController.storeGithu
 GET /github/users/:userName/repositories controllers.ApplicationController.getGithubUserRepositories(userName:String)
 GET /github/users/:userName/repos/:repoName controllers.ApplicationController.getGithubRepository(userName:String,repoName:String)
 GET /github/users/:userName/repos/:repoName/*path controllers.ApplicationController.getGithubRepositoryFileOrDir(userName:String,repoName:String,path:String)
+PUT /github/users/:userName/repos/:repoName/*path controllers.ApplicationController.createGithubRepositoryFile(userName:String,repoName:String,path:String)
+
+# when you complete a put for both create a file and directory then you can combine them into one controller if possible
+#PUT /github/users/:userName/repos/:repoName/*path controllers.ApplicationController.createGithubRepositoryFileOrDir(userName:String,repoName:String,path:String)
 
 
 POST    /api/create controllers.ApplicationController.create()

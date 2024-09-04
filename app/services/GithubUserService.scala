@@ -2,7 +2,7 @@ package services
 
 import cats.data.EitherT
 import connectors.GithubUserConnector
-import models.{APIError, FileModel, RepositoriesModel, RepositoryModel, UserModel}
+import models.{APIError, FileModel, FileRequestModel, FileRequestModelDTO, RepositoriesModel, RepositoryModel, UserModel}
 import play.api.libs.json._
 
 import java.nio.charset.StandardCharsets
@@ -37,5 +37,8 @@ class GithubUserService @Inject()(connector:GithubUserConnector){
 
   def getGithubRepositoryFile(urlOverride: Option[String] = None,userName: String, repoName:String, path: Array[Byte])(implicit ec: ExecutionContext):EitherT[Future, APIError, FileModel] =
     connector.get[FileModel](urlOverride.getOrElse(s"https://api.github.com/repos/$userName/$repoName/contents/${decoder(path)}"))
+
+  def createGithubRepositoryFile(urlOverride: Option[String] = None,userName: String, repoName:String, path: Array[Byte], requestBody: FileRequestModelDTO)(implicit ec: ExecutionContext): EitherT[Future, APIError, FileModel] =
+    connector.put[FileRequestModel,FileModel](urlOverride.getOrElse(s"https://api.github.com/repos/$userName/$repoName/contents/${decoder(path)}"),requestBody.fileRequestModel)
 
 }
