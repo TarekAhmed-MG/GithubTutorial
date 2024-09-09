@@ -58,9 +58,11 @@ class GithubUserConnector  @Inject()(ws: WSClient) {
           result =>
             Right(result.json.as[Response])
         }
-        .recover { case _: Throwable => // changed it from WSResponse to throwable as the recover wouldn't hit unless it was a WSRespnse
+        .recover { case _: WSResponse => // changed it from WSResponse to throwable as the recover wouldn't hit unless it was a WSRespnse
           Left(APIError.BadAPIResponse(500, "Could not connect"))
         }
     }
   }
 }
+
+// test sign
