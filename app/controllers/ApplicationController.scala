@@ -1,6 +1,6 @@
 package controllers
 
-import models.{APIError, FileRequestModel, FileRequestModelDTO, UserModel}
+import models.{APIError, FileCreateModel, FileCreateModelDTO, FileUpdateModelDTO, UserModel}
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
 import services.{GithubUserService, RepositoryService}
@@ -60,9 +60,9 @@ class ApplicationController @Inject()(
 
   def createGithubRepositoryFile(userName:String,repoName:String,path: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
     val encodedPath = Base64.getEncoder.encode(path.getBytes(StandardCharsets.UTF_8))
-    request.body.validate[FileRequestModelDTO] match {
-      case JsSuccess(fileRequestModelDTO , _) =>
-        githubUserService.createGithubRepositoryFile(userName= userName, repoName= repoName, path= encodedPath,requestBody= fileRequestModelDTO).value.map {
+    request.body.validate[FileCreateModelDTO] match {
+      case JsSuccess(fileCreateModelDTO , _) =>
+        githubUserService.createGithubRepositoryFile(userName= userName, repoName= repoName, path= encodedPath, requestBody= fileCreateModelDTO).value.map {
           case Right(file) => Ok {views.html.file(file)}
           case Left(apiError) => Status(apiError.httpResponseStatus)(apiError.reason)
         }
@@ -72,7 +72,21 @@ class ApplicationController @Inject()(
 
   //update repo/file
 
+  def updateGithubRepositoryFile(userName:String,repoName:String,path: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
+    val encodedPath = Base64.getEncoder.encode(path.getBytes(StandardCharsets.UTF_8))
+    request.body.validate[FileUpdateModelDTO] match {
+      case JsSuccess(fileUpdateModelDTO , _) =>
+        githubUserService.updateGithubRepositoryFile(userName= userName, repoName= repoName, path= encodedPath, requestBody= fileUpdateModelDTO).value.map {
+          case Right(file) => Ok {views.html.file(file)}
+          case Left(apiError) => Status(apiError.httpResponseStatus)(apiError.reason)
+        }
+      case JsError(_) => Future(BadRequest)
+    }
+  }
+
   // delete repo/file
+
+
 
   def storeGithubUser(userName: String): Action[AnyContent] = Action.async { implicit request =>
     githubUserService.getGithubUser(userName = userName).value.flatMap {

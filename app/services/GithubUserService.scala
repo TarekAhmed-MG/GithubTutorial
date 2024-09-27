@@ -2,7 +2,7 @@ package services
 
 import cats.data.EitherT
 import connectors.GithubUserConnector
-import models.{APIError, FileModel, FileRequestModel, FileRequestModelDTO, RepositoriesModel, RepositoryModel, UserModel}
+import models.{APIError, FileCreateModel, FileCreateModelDTO, FileModel, FileUpdateModel, FileUpdateModelDTO, RepositoriesModel, RepositoryModel, UserModel}
 import play.api.libs.json._
 
 import java.nio.charset.StandardCharsets
@@ -38,7 +38,9 @@ class GithubUserService @Inject()(connector:GithubUserConnector){
   def getGithubRepositoryFile(urlOverride: Option[String] = None,userName: String, repoName:String, path: Array[Byte])(implicit ec: ExecutionContext):EitherT[Future, APIError, FileModel] =
     connector.get[FileModel](urlOverride.getOrElse(s"https://api.github.com/repos/$userName/$repoName/contents/${decoder(path)}"))
 
-  def createGithubRepositoryFile(urlOverride: Option[String] = None,userName: String, repoName:String, path: Array[Byte], requestBody: FileRequestModelDTO)(implicit ec: ExecutionContext): EitherT[Future, APIError, FileModel] =
-    connector.put[FileRequestModel,FileModel](urlOverride.getOrElse(s"https://api.github.com/repos/$userName/$repoName/contents/${decoder(path)}"),requestBody.fileRequestModel)
+  def createGithubRepositoryFile(urlOverride: Option[String] = None,userName: String, repoName:String, path: Array[Byte], requestBody: FileCreateModelDTO)(implicit ec: ExecutionContext): EitherT[Future, APIError, FileModel] =
+    connector.put[FileCreateModel,FileModel](urlOverride.getOrElse(s"https://api.github.com/repos/$userName/$repoName/contents/${decoder(path)}"),requestBody.fileCreateModel)
 
+  def updateGithubRepositoryFile(urlOverride: Option[String] = None,userName: String, repoName:String, path: Array[Byte], requestBody: FileUpdateModelDTO)(implicit ec: ExecutionContext): EitherT[Future, APIError, FileModel] =
+    connector.put[FileUpdateModel,FileModel](urlOverride.getOrElse(s"https://api.github.com/repos/$userName/$repoName/contents/${decoder(path)}"),requestBody.fileUpdateModel)
 }

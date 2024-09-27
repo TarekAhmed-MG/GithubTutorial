@@ -5,10 +5,10 @@ import play.api.libs.json.{Json, OFormat}
 import java.nio.charset.StandardCharsets
 import java.util.Base64
 
-case class FileRequestModelDTO(message:String,content:String){
+case class FileCreateModelDTO(message:String, content:String){
 
   private val encodedContent = Base64.getMimeEncoder.encodeToString(content.getBytes(StandardCharsets.UTF_8))
-  val fileRequestModel: FileRequestModel = FileRequestModel(message, encodedContent)
+  val fileCreateModel: FileCreateModel = FileCreateModel(message, encodedContent)
 
 //  def apply(message:String,content:String): Unit = {
 //    val encodedContent = Base64.getMimeEncoder.encodeToString(content.getBytes(StandardCharsets.UTF_8))
@@ -16,6 +16,6 @@ case class FileRequestModelDTO(message:String,content:String){
 //  }
 }
 
-object FileRequestModelDTO {
-  implicit val formats: OFormat[FileRequestModelDTO] = Json.format[FileRequestModelDTO]
+object FileCreateModelDTO {
+  implicit val formats: OFormat[FileCreateModelDTO] = Json.format[FileCreateModelDTO]
 }
