@@ -1,6 +1,6 @@
 package controllers
 
-import models.{APIError, FileCreateModel, FileCreateModelDTO, FileUpdateModelDTO, UserModel}
+import models.{APIError, FileCreateModel, FileCreateModelDTO, FileDeleteModel, FileUpdateModelDTO, UserModel}
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
 import services.{GithubUserService, RepositoryService}
@@ -86,7 +86,17 @@ class ApplicationController @Inject()(
 
   // delete repo/file
 
-
+  def deleteGithubRepositoryFile(userName:String,repoName:String,path: String): Action[JsValue] = Action.async(parse.json) { implicit request =>
+    val encodedPath = Base64.getEncoder.encode(path.getBytes(StandardCharsets.UTF_8))
+    request.body.validate[FileDeleteModel] match {
+      case JsSuccess(fileDeleteModel , _) =>
+        githubUserService.deleteGithubRepositoryFile(userName= userName, repoName= repoName, path= encodedPath, requestBody= fileDeleteModel).value.map {
+          case Right(file) => Ok {views.html.file(file)}
+          case Left(apiError) => Status(apiError.httpResponseStatus)(apiError.reason)
+        }
+      case JsError(_) => Future(BadRequest)
+    }
+  }
 
   def storeGithubUser(userName: String): Action[AnyContent] = Action.async { implicit request =>
     githubUserService.getGithubUser(userName = userName).value.flatMap {

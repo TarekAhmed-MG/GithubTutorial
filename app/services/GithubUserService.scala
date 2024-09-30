@@ -2,7 +2,7 @@ package services
 
 import cats.data.EitherT
 import connectors.GithubUserConnector
-import models.{APIError, FileCreateModel, FileCreateModelDTO, FileModel, FileUpdateModel, FileUpdateModelDTO, RepositoriesModel, RepositoryModel, UserModel}
+import models.{APIError, FileCreateModel, FileCreateModelDTO, FileDeleteModel, FileModel, FileUpdateModel, FileUpdateModelDTO, RepositoriesModel, RepositoryModel, UserModel}
 import play.api.libs.json._
 
 import java.nio.charset.StandardCharsets
@@ -43,4 +43,8 @@ class GithubUserService @Inject()(connector:GithubUserConnector){
 
   def updateGithubRepositoryFile(urlOverride: Option[String] = None,userName: String, repoName:String, path: Array[Byte], requestBody: FileUpdateModelDTO)(implicit ec: ExecutionContext): EitherT[Future, APIError, FileModel] =
     connector.put[FileUpdateModel,FileModel](urlOverride.getOrElse(s"https://api.github.com/repos/$userName/$repoName/contents/${decoder(path)}"),requestBody.fileUpdateModel)
+
+  def deleteGithubRepositoryFile(urlOverride: Option[String] = None,userName: String, repoName:String, path: Array[Byte], requestBody: FileDeleteModel)(implicit ec: ExecutionContext): EitherT[Future, APIError, FileModel] =
+    connector.put[FileDeleteModel,FileModel](urlOverride.getOrElse(s"https://api.github.com/repos/$userName/$repoName/contents/${decoder(path)}"),requestBody)
+
 }
